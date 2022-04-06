@@ -1802,6 +1802,7 @@ class AutoTestPlane(AutoTest):
         self.progress("Should still be around home")
         self.wait_distance_to_home(90, 110, timeout=2)
         self.disarm_vehicle(force=True)
+        self.reboot_sitl()
 
     def climb_before_turn(self):
         self.wait_ready_to_arm()
@@ -2279,8 +2280,11 @@ function'''
         self.wait_servo_channel_value(3, 1000, timeout=130, comparator=operator.eq)
         self.wait_altitude(-5, 5, timeout=300, relative=True)
         self.wait_statustext("Auto disarmed", timeout=240, check_context=True)
+        self.set_parameter("SIM_RC_FAIL", 0) # throttle-to-950
     
     def rtl_home_altitude(self):
+        self.reboot_sitl()
+        self.wait_ready_to_arm()
         self.set_parameters({
             "RTL_ALT_MIN": 200,
             "RTL_ALT_HOME": 100,
